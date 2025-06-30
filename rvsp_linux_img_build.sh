@@ -92,7 +92,7 @@ build_buildroot() {
 build_grub() {
     log "Starting GRUB build..."
 
-    local grub_dir="$BUILD_DIR/grub"
+    local grub_dir="$CLONE_DIR/grub"
     local grub_output="$OUTPUT_DIR/grub"
     local grub_config="$CLONE_DIR/config/grub_prefix.cfg"
 
@@ -124,7 +124,7 @@ build_grub() {
 build_linux() {
     log "Starting Linux kernel build..."
 
-    local linux_dir="$BUILD_DIR/linux"
+    local linux_dir="$CLONE_DIR/linux"
     local linux_out="$OUTPUT_DIR/linux"
 
     mkdir -p "$linux_out"
@@ -143,9 +143,9 @@ clean_build() {
     read -p "Are you sure you want to clean all build directories? (y/n): " confirm
     if [[ $confirm =~ ^[yY]$ ]]; then
         log "Starting to clean build directories..."
-        rm -rf "$BUILD_DIR"
+        rm -rf "$CLONE_DIR"
         rm -rf "$OUTPUT_DIR"
-        mkdir -p "$BUILD_DIR" "$OUTPUT_DIR"
+        mkdir -p "$CLONE_DIR" "$OUTPUT_DIR"
         log "Cleanup completed"
     else
         log "Cleanup canceled"
@@ -179,7 +179,7 @@ create_fatpart() {
 
     mcopy -i $fatpart_name $PLATDIR_DIR/bootriscv64.efi ::/EFI/BOOT
     mcopy -i $fatpart_name $OUTPUT_DIR/linux/arch/riscv/boot/Image ::/
-    mcopy -i $fatpart_name $OUTPUT_DIR/buildroot/out/riscv/images/ramdisk-buildroot.img ::/
+    mcopy -i $fatpart_name $OUTPUT_DIR/buildroot/images/ramdisk-buildroot.img ::/
 
     echo "FAT partition image creation completed"
 }
@@ -236,7 +236,7 @@ prepare_disk_image() {
     cat part_table >> $IMG_BB
 
     create_diskimage $IMG_BB $PART_START $FAT_SIZE $FAT2_SIZE
-    cp $IMG_BB $PLATDIR
+    # cp $IMG_BB $PLATDIR_DIR
 
     echo "----------------------------------------------------"
     popd || exit 1
